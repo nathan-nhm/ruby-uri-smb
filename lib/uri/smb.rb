@@ -328,6 +328,6 @@ module URI
     end
   end
 
-  @@schemes['SMB'] = SMB
+  register_scheme 'SMB', SMB
 end
 
