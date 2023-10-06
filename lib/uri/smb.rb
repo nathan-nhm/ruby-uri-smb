@@ -77,6 +77,33 @@ module URI
       parse_query
     end
 
+    def self.build(args)
+      if args.kind_of?(Array)
+        args[3] = '/' + args[3].sub(/^\//, '%2F')
+      else
+        args[:path] = '/' + args[:path].sub(/^\//, '%2F')
+      end
+
+      if args.kind_of?(Array) &&
+          args.size == ::URI::Generic::COMPONENT.size
+        tmp = args
+      elsif args.kind_of?(Hash)
+        tmp = ::URI::Generic::COMPONENT.collect do |c|
+          if args.include?(c)
+            args[c]
+          else
+            nil
+          end
+        end
+      else
+        raise ArgumentError, "expected Array or Hash of components of #{self.class} (#{self.class.component.join(', ')})"
+      end
+
+      tmp << URI::SMB::DEFAULT_PARSER
+      tmp << false
+      return self.new(*tmp)
+    end
+
     def parse_path
       @share = @path ? @path.match(%r#/([^/]+)#) ? $1 : nil : nil;
     end
